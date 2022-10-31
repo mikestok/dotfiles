@@ -1,6 +1,8 @@
 if status is-interactive
-		set -g fish_autosuggestion_enabled 0
+    set -g fish_autosuggestion_enabled 0
     set fish_greeting '' # turn off the greeting
+
+    set -x APPLE_SSH_ADD_BEHAVIOUR macos
 end
 
 if test -d /usr/local/sbin
