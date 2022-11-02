@@ -5,13 +5,10 @@ if status is-interactive
     set -x APPLE_SSH_ADD_BEHAVIOUR macos
 end
 
-if test -d /usr/local/sbin
-    fish_add_path /usr/local/sbin
-end
-
-if test -d $HOME/local/bin
-    fish_add_path $HOME/local/bin
-end
+fish_add_path /usr/local/sbin
+fish_add_path $HOME/local/bin
+#  /opt/local/bin is used by MacPorts
+fish_add_path /opt/local/bin
 
 set -x EDITOR vim
 
