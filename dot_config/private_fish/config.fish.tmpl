@@ -18,9 +18,10 @@ set -x EDITOR vim
 set -x ERL_AFLAGS "-kernel shell_history enabled"
 set -x KERL_BUILD_DOCS true
 {{- if eq .chezmoi.hostname "Mike-Stoks-MacBook-Pro" }}
+# Kinetic’s Erlang is linked against openssl 1.1
 set -x KERL_CONFIGURE_OPTIONS "--without-javac --with-ssl=/usr/local/opt/openssl@1.1"
 {{- else }}
 set -x KERL_CONFIGURE_OPTIONS --without-javac
-{{- end }}
 
 source (brew --prefix asdf)/libexec/asdf.fish
+{{- end }}
