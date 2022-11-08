@@ -1,0 +1,157 @@
+" Install vim-plug if not found
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+endif
+
+call plug#begin('~/.vim/plugged')
+
+" rest of the code should fade away.
+Plug 'mikestok/vim-colors-thinking'
+Plug 'mikestok/vim-elixir', { 'branch': 'mike' }
+
+Plug 'justinmk/vim-dirvish'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-fugitive'
+
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+Plug 'godlygeek/tabular'
+
+call plug#end()
+
+set nocompatible        " Use Vim settings, rather than Vi settings
+set softtabstop=2       " Indent by 2 spaces when hitting tab
+set shiftwidth=2        " Indent by 2 spaces when auto-indenting
+set tabstop=2           " Show existing tab with 2 spaces width
+syntax on               " Enable syntax highlighting
+set autoindent          " Enable auto indenting
+set number              " Enable line numbers
+set numberwidth=6
+colorscheme thinking   " Set nice looking colorscheme
+set laststatus=2        " show status line
+set statusline=%F%m%r%h%w%=(%{&ff}/%Y)\ (line\ %l\/%L,\ col\ %c)\ 
+set wildmenu            " Display command line's tab complete options as a menu.
+set guifont=TriplicateBCodeRegular:h14
+set encoding=utf-8
+set fileencoding=utf-8
+set spelllang=en_ca
+
+" Swap files and backup files. See https://jovica.org/posts/vim_swap/
+set nobackup            " Disable backup files
+set directory=~/.vim/swap//
+
+
+let mapleader = " "
+let maplocalleader = " "
+
+" vmap <Leader>y "+y
+" vmap <Leader>d "+d
+" nmap <Leader>p "+p
+" nmap <Leader>P "+P
+" vmap <Leader>p "+p
+" vmap <Leader>P "+P
+
+" {{{ vimrc editing and sourcing
+nnoremap <Leader>ev :split $MYVIMRC<CR>
+nnoremap <Leader>sv :source $MYVIMRC<CR>
+" }}}
+
+" {{{ dirvish
+" disable netrw (use dirvish instead)
+let g:loaded_netrw = 1
+let g:loaded_netrwPlugin = 1
+" }}}
+
+" Make Ctrl-X toggle syntax highlighting.
+nnoremap <silent> <C-X> :if exists("g:syntax_on") <Bar>
+          \   syntax off <Bar>
+          \ else <Bar>
+          \   syntax enable <Bar>
+          \ endif <CR>
+inoremap <silent> <C-X> <Esc>
+          \ :if exists("g:syntax_on") <Bar>
+          \   syntax off <Bar>
+          \ else <Bar>
+          \   syntax enable <Bar>
+          \ endif <CR>
+          \ i
+
+" Change cursor shape in iterm
+" e.g. https://vim.fandom.com/wiki/Change_cursor_shape_in_different_modes
+
+let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+let &t_SR = "\<Esc>]50;CursorShape=2\x7"
+let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+
+" set Vim-specific sequences for RGB colors.
+"
+" From https://tomlankhorst.nl/iterm-tmux-vim-true-color/
+set   termguicolors
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+
+au! FileType css,scss setl iskeyword+=-
+
+inoremap jk <Esc>
+
+set mouse=a
+
+" Always show the signcolumn, otherwise it would shift the text each time
+" diagnostics appear/become resolved.
+if has("patch-8.1.1564")
+  " Recently vim can merge signcolumn and number column into one
+  set signcolumn=number
+else
+  set signcolumn=yes
+endif
+
+" fzy
+
+let g:fzy = {'findcmd': 'fd --type f'}
+nnoremap <silent> <leader>t :FzyFind<cr>
+
+" Navigate quickfix list with ease
+nnoremap <silent> [q :cprevious<CR>
+nnoremap <silent> ]q :cnext<CR>
+
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+    nnoremap <buffer> gd <plug>(lsp-definition)
+    nnoremap <buffer> gs <plug>(lsp-document-symbol-search)
+    nnoremap <buffer> gS <plug>(lsp-workspace-symbol-search)
+    nnoremap <buffer> gr <plug>(lsp-references)
+    nnoremap <buffer> gi <plug>(lsp-implementation)
+    nnoremap <buffer> gt <plug>(lsp-type-definition)
+    nnoremap <buffer> <leader>rn <plug>(lsp-rename)
+    nnoremap <buffer> [g <plug>(lsp-previous-diagnostic)
+    nnoremap <buffer> ]g <plug>(lsp-next-diagnostic)
+    nmap <buffer> K <plug>(lsp-hover)
+		nnoremap <buffer> D :LspDocumentDiagnostics<CR>
+    inoremap <buffer> <expr><c-f> lsp#scroll(+4)
+    inoremap <buffer> <expr><c-d> lsp#scroll(-4)
+
+    let g:lsp_format_sync_timeout = 1000
+    autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+
+    " refer to doc to add more commands
+endfunction
+
+augroup lsp_install
+    au!
+    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+
+" fzf {{{
+" the `nmap` have been changed to `nnoremap`
+set rtp+=/usr/local/opt/fzf
+nnoremap ; :Buffers<CR>
+nnoremap <Leader>r :Tags<CR>
+nnoremap <Leader>t :Files<CR>
+nnoremap <Leader>a :Ag<CR>"
+" }}}
