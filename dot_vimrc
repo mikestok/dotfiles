@@ -40,6 +40,7 @@ set guifont=TriplicateBCodeRegular:h14
 set encoding=utf-8
 set fileencoding=utf-8
 set spelllang=en_ca
+set expandtab
 
 " Swap files and backup files. See https://jovica.org/posts/vim_swap/
 set nobackup            " Disable backup files
